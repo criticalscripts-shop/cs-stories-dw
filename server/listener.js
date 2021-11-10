@@ -21,7 +21,7 @@
                     content: 'A new story has been uploaded!',
 
                     username: 'cs-stories',
-                    avatar_url: 'https://files.criticalscripts.shop/images/favicon.png',
+                    avatar_url: 'https://files.criticalscripts.shop/brand-assets/favicon.png',
 
                     embeds: [
                         {
@@ -52,7 +52,7 @@
 
                             footer: {
                                 text: 'Critical Scripts',
-                                icon_url: 'https://files.criticalscripts.shop/images/favicon.png'
+                                icon_url: 'https://files.criticalscripts.shop/brand-assets/favicon.png'
                             }
                         }
                     ]
