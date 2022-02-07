@@ -3,7 +3,6 @@
     "main": "server/listener.js",
     "version": "1.0.0",
     "description": "Critical Scripts | Stories Discord Webhook | https://criticalscripts.shop",
-
     "dependencies": {
         "request": "^2.88.2"
     }
