@@ -1,6 +1,4 @@
-/* Critical Scripts | https://criticalscripts.shop */
-
-// This file is internal, do NOT edit it unless you know what you are doing.
+process.env.NODE_ENV = 'production'
 
 ;(() => {
     if (!config.discordWebhookUrl)
