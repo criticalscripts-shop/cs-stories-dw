@@ -4,16 +4,16 @@ process.env.NODE_ENV = 'production'
     if (!config.discordWebhookUrl)
         return
 
-    const path = `${GetResourcePath(config.resourceName)}/storage`
+    const path = `${GetResourcePath(config.resourceName)}/storage/videos`
     const fs = require('fs')
     const request = require('request')
 
-    on('cs-stories:upload', (identifiers, metadata, uuid) => {
+    on('cs-stories:upload', entry => {
         request.post({
             url: config.discordWebhookUrl,
 
             formData: {
-                file: fs.createReadStream(`${path}/${uuid}.webm`),
+                file: fs.createReadStream(`${path}/${entry.uuid}.webm`),
 
                 payload_json: JSON.stringify({
                     content: 'A new story has been uploaded!',
@@ -25,25 +25,19 @@ process.env.NODE_ENV = 'production'
                         {
                             type: 'rich',
                             title: 'Story Data',
-                            description: `UUID \`${uuid}\``,
+                            description: `UUID \`${entry.uuid}\``,
                             color: 0xff0037,
 
                             fields: [
                                 {
                                     name: 'Author',
-                                    value: `**${metadata.author}**`,
-                                    inline: true
-                                },
-
-                                {
-                                    name: 'Identifier',
-                                    value: `\`${identifiers.filter(v => v.startsWith(`${config.logIdentifier}:`))[0] || 'No Identifier'}\``,
-                                    inline: true
+                                    value: `**${entry.author}** (\`${entry.license}\`)`,
+                                    inline: false
                                 },
 
                                 {
                                     name: 'Location',
-                                    value: `_${metadata.location.x.toFixed(8)}, ${metadata.location.y.toFixed(8)}, ${metadata.location.z.toFixed(8)}_`,
+                                    value: `_${entry.location.x.toFixed(8)}, ${entry.location.y.toFixed(8)}, ${entry.location.z.toFixed(8)}_`,
                                     inline: false
                                 }
                             ],
