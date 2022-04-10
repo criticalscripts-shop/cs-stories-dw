@@ -17,7 +17,10 @@ process.env.NODE_ENV = 'production'
 
         const request = require('request')
 
-        on('cs-stories:upload', entry => {
+        on('cs-stories:upload', (entry, friendlyLocation) => {
+            // The "friendlyLocation" variable comes from the player's client and cannot be verified for its contents nor it is guaranteed to be a location.
+            // If you end up using this resource as a feed (which you should not; it's supposed to be used for moderation), you'd probably want to verify this against whatever the player's client may legitimately send (e.g. zone names).
+
             request.post({
                 url: config.discordWebhookUrl,
 
@@ -46,7 +49,7 @@ process.env.NODE_ENV = 'production'
 
                                     {
                                         name: 'Location',
-                                        value: `_${entry.location.x.toFixed(8)}, ${entry.location.y.toFixed(8)}, ${entry.location.z.toFixed(8)}_`,
+                                        value: `\`${entry.location.x.toFixed(8)}\`, \`${entry.location.y.toFixed(8)}\`, \`${entry.location.z.toFixed(8)}\``,
                                         inline: false
                                     }
                                 ],
