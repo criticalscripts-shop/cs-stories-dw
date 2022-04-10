@@ -1,58 +1,70 @@
 process.env.NODE_ENV = 'production'
 
 ;(() => {
-    if (!config.discordWebhookUrl)
-        return
+    on('cs-stories:ready', (resourceName, external) => {
+        if (!config.discordWebhookUrl)
+            return
 
-    const path = `${GetResourcePath(config.resourceName)}/storage/videos`
-    const fs = require('fs')
-    const request = require('request')
+        let path = null
+        let fs = null
+        let globalViewKey = null
 
-    on('cs-stories:upload', entry => {
-        request.post({
-            url: config.discordWebhookUrl,
+        if (!external) {
+            path = `${GetResourcePath(resourceName)}/storage/videos`
+            fs = require('fs')
+        } else
+            (require('crypto')).createHash('sha256').update(external.key).digest('hex')
 
-            formData: {
-                file: fs.createReadStream(`${path}/${entry.uuid}.webm`),
+        const request = require('request')
 
-                payload_json: JSON.stringify({
-                    content: 'A new story has been uploaded!',
+        on('cs-stories:upload', entry => {
+            request.post({
+                url: config.discordWebhookUrl,
 
-                    username: 'cs-stories',
-                    avatar_url: 'https://files.criticalscripts.shop/brand-assets/favicon.png',
+                formData: {
+                    file: external ? null : fs.createReadStream(`${path}/${entry.uuid}.webm`),
 
-                    embeds: [
-                        {
-                            type: 'rich',
-                            title: 'Story Data',
-                            description: `UUID \`${entry.uuid}\``,
-                            color: 0xff0037,
+                    payload_json: JSON.stringify({
+                        content: `A new story has been uploaded!${external ? ` ${external.url}video/${globalViewKey}/${entry.uuid}.webm` : ''}`,
 
-                            fields: [
-                                {
-                                    name: 'Author',
-                                    value: `**${entry.author}** (\`${entry.license}\`)`,
-                                    inline: false
-                                },
+                        username: 'cs-stories',
+                        avatar_url: 'https://files.criticalscripts.shop/brand-assets/favicon.png',
 
-                                {
-                                    name: 'Location',
-                                    value: `_${entry.location.x.toFixed(8)}, ${entry.location.y.toFixed(8)}, ${entry.location.z.toFixed(8)}_`,
-                                    inline: false
+                        embeds: [
+                            {
+                                type: 'rich',
+                                title: 'Story Data',
+                                description: `UUID \`${entry.uuid}\``,
+                                color: 0xff0037,
+
+                                fields: [
+                                    {
+                                        name: 'Author',
+                                        value: `_${entry.author}_ (\`${entry.license}\`)`,
+                                        inline: false
+                                    },
+
+                                    {
+                                        name: 'Location',
+                                        value: `_${entry.location.x.toFixed(8)}, ${entry.location.y.toFixed(8)}, ${entry.location.z.toFixed(8)}_`,
+                                        inline: false
+                                    }
+                                ],
+
+                                footer: {
+                                    text: 'Critical Scripts',
+                                    icon_url: 'https://files.criticalscripts.shop/brand-assets/favicon.png'
                                 }
-                            ],
-
-                            footer: {
-                                text: 'Critical Scripts',
-                                icon_url: 'https://files.criticalscripts.shop/brand-assets/favicon.png'
                             }
-                        }
-                    ]
-                })
-            }
-        }, (error, response, body) => {
-            if (error)
-                console.error(`[cs-stories-dw] Failed to post Discord webhook!`, error)
+                        ]
+                    })
+                }
+            }, (error, response, body) => {
+                if (error)
+                    console.error(`[cs-stories-dw] Failed to post Discord webhook!`, error)
+            })
         })
     })
+
+    emit('cs-stories-dw:ready')
 }) ();
