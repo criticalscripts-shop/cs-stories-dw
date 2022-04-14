@@ -13,12 +13,12 @@ process.env.NODE_ENV = 'production'
             path = `${GetResourcePath(resourceName)}/storage/videos`
             fs = require('fs')
         } else
-            (require('crypto')).createHash('sha256').update(external.key).digest('hex')
+            globalViewKey = (require('crypto')).createHash('sha256').update(external.key).digest('hex')
 
         const request = require('request')
 
-        on('cs-stories:upload', (entry, friendlyLocation) => {
-            // The "friendlyLocation" variable comes from the player's client and cannot be verified for its contents nor it is guaranteed to be a location.
+        on('cs-stories:upload', entry => {
+            // The "entry.friendlyLocation" comes from the player's client and cannot be verified for its contents nor it is guaranteed to be a location.
             // If you end up using this resource as a feed (which you should not; it's supposed to be used for moderation), you'd probably want to verify this against whatever the player's client may legitimately send (e.g. zone names).
 
             request.post({
