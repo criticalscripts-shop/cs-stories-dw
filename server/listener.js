@@ -5,17 +5,14 @@ process.env.NODE_ENV = 'production'
         if (!config.discordWebhookUrl)
             return
 
-        let path = null
-        let fs = null
         let globalViewKey = null
 
-        if (!external) {
-            path = `${GetResourcePath(resourceName)}/storage/videos`
-            fs = require('fs')
-        } else
-            globalViewKey = (require('crypto')).createHash('sha256').update(external.key).digest('hex')
-
+        const path = `${GetResourcePath(resourceName)}/storage/videos`
+        const fs = require('fs')
         const request = require('request')
+
+        if (external)
+            globalViewKey = (require('crypto')).createHash('sha256').update(external.key).digest('hex')
 
         on('cs-stories:upload', entry => {
             // The "entry.friendlyLocation" comes from the player's client and cannot be verified for its contents nor it is guaranteed to be a location.
