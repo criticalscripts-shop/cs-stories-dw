@@ -61,7 +61,7 @@ process.env.NODE_ENV = 'production'
                 }
             }, (error, response, body) => {
                 if (error)
-                    console.error(`[cs-stories-dw] Failed to post Discord webhook!`, error)
+                    console.error('[cs-stories-dw] Failed to post Discord webhook!', error)
             })
         })
     })
